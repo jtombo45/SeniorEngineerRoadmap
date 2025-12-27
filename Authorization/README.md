@@ -284,6 +284,32 @@ If your app stores tokens in localStorage and you have XSS:
 
 ---
 
+## What is CSRF (Cross-Site Request Forgery)?
+
+**CSRF (Cross-Site Request Forgery)** happens when a malicious website tricks your browser into making requests to a site where you're authenticated.
+
+**How it works:**
+
+* You're logged into `bank.com` (cookie stored in browser)
+
+* You visit `evil.com` which has a form that submits to `bank.com`
+
+* Your browser automatically sends your `bank.com` cookie with the request
+
+* `bank.com` sees you're authenticated and processes the request
+
+**CSRF defenses:**
+
+* **SameSite cookies**: Cookies are only sent with requests from the same site
+
+* **CSRF tokens**: Server generates a unique token per session, client must include it
+
+* **Origin checks**: Verify the request came from your own domain
+
+* **Double-submit cookie pattern**: Cookie value must match a value in the request body/header
+
+---
+
 # 7) OAuth2 (delegated authorization) in plain English
 
 OAuth2 is used when:
@@ -487,9 +513,18 @@ Authorization models are **the strategy** for deciding access.
 
 **Example**
 
-* JWT contains role=Editor and scopes=repo:read
+* JWT (JSON Web Token) contains role=Editor and scopes=repo:read
 
 * Your RBAC/ABAC logic uses that info to allow "edit article" but deny "delete user"
+
+**What is a JWT?**
+
+A JWT is a self-contained token format with three parts:
+* **Header**: Algorithm and token type
+* **Payload**: Claims (userId, roles, scopes, expiration, etc.)
+* **Signature**: Cryptographic signature to verify authenticity
+
+JWTs are stateless - the server can verify them without database lookups, making them popular for APIs.
 
 ```mermaid
 flowchart LR
@@ -583,15 +618,47 @@ Real systems often combine models:
 
 ## Glossary (fast)
 
-* **JWT**: a common token format (often used as access tokens)
+* **JWT (JSON Web Token)**: A common token format (often used as access tokens). Contains three parts: header, payload (claims), and signature. Self-contained and can be verified without database lookups.
 
-* **Bearer token**: whoever "bears" (has) it can use it (treat like cash)
+* **Bearer token**: Whoever "bears" (has) it can use it (treat like cash). Sent in the `Authorization: Bearer <token>` header.
 
-* **Scope**: a permission label (e.g., `repo:read`)
+* **Token**: A temporary credential issued after authentication. Represents identity and/or permissions. Short-lived and scoped.
 
-* **Claims**: fields inside a token (userId, roles, exp, iss)
+* **Access token**: Short-lived token (minutes) used to access protected resources. Sent on every API request.
 
-* **Issuer**: who created the token (IdP)
+* **Refresh token**: Long-lived token (days/weeks) used to obtain new access tokens without re-authentication.
+
+* **Scope**: A permission label (e.g., `repo:read`, `user:write`). Defines what actions the token allows.
+
+* **Claims**: Fields inside a token (userId, roles, exp, iss, aud). Contains information about the user and permissions.
+
+* **Issuer (iss)**: Who created the token (Identity Provider like Cognito/Okta/Auth0).
+
+* **IdP (Identity Provider)**: Service that authenticates users and issues tokens (e.g., Cognito, Okta, Auth0, Google).
+
+* **OIDC (OpenID Connect)**: Authentication layer built on top of OAuth2. Provides identity information (who the user is) in addition to OAuth2's authorization (what they can do).
+
+* **OAuth2**: Authorization framework that allows apps to access resources on behalf of users without sharing passwords.
+
+* **XSS (Cross-Site Scripting)**: Attack where malicious JavaScript is injected into your site/app, potentially stealing tokens or session data.
+
+* **CSRF (Cross-Site Request Forgery)**: Attack where a malicious site tricks your browser into making authenticated requests to another site.
+
+* **MFA (Multi-Factor Authentication)**: Security method requiring multiple forms of verification (password + SMS code, password + authenticator app, etc.).
+
+* **CSP (Content Security Policy)**: Security header that helps prevent XSS by controlling which resources can be loaded/executed.
+
+* **HttpOnly cookie**: Cookie attribute that prevents JavaScript from accessing the cookie, protecting against XSS token theft.
+
+* **SameSite cookie**: Cookie attribute that controls when cookies are sent with cross-site requests, helping prevent CSRF.
+
+* **SPA (Single Page Application)**: Web app that loads once and updates dynamically without full page reloads (e.g., React, Vue, Angular apps).
+
+* **RBAC (Role-Based Access Control)**: Authorization model where users are assigned roles, and roles have permissions.
+
+* **ABAC (Attribute-Based Access Control)**: Authorization model where permissions are based on attributes (user, resource, environment).
+
+* **ACL (Access Control List)**: Authorization model where each resource has its own list of who can do what.
 
 ---
 
