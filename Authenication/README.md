@@ -108,7 +108,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A[Login Request] -->|username + password| B["base64(username + password)"]
+    A[Login Request] -->|username + password| B[base64 encoded]
     
     style A fill:#e1c4ff
     style B fill:#c4ffc4
@@ -225,7 +225,7 @@ flowchart LR
     A[User] -->|Login| B[Google]
     B -->|Issues JWT| C[App]
     
-    D["JWT Sample Payload<br/>{<br/>  \"user_id\": \"123\",<br/>  \"exp\": \"2025-09-10\"<br/>}"]
+    D[JWT Sample Payload<br/>user_id: 123<br/>exp: 2025-09-10]
     C -.-> D
     
     style A fill:#c4e1ff
@@ -398,8 +398,8 @@ flowchart TD
     A --> D[Calendar]
     
     E[Identity Protocols]
-    E --> F["SAML<br/>For enterprise tools<br/>Examples: Salesforce, internal<br/>Older, XML-based"]
-    E --> G["OAuth2<br/>For consumer apps<br/>Example: 'Login with Google'<br/>Modern, JSON-based"]
+    E --> F[SAML<br/>For enterprise tools<br/>Examples: Salesforce, internal<br/>Older, XML-based]
+    E --> G[OAuth2<br/>For consumer apps<br/>Example: Login with Google<br/>Modern, JSON-based]
     
     style A fill:#c4ffc4
     style B fill:#e1c4ff
@@ -547,13 +547,3 @@ CSRF          → tricks browser into bad requests
 ```
 
 If this makes sense, authentication has officially **clicked**.
-
----
-
-If you want later, we can:
-
-* Tailor this to **React / Node**
-* Map it to **AWS Cognito or Azure AD B2C**
-* Turn it into a **1-page interview cheat sheet**
-
-You built this the right way — understanding *why*, not just *how*.
