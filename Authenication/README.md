@@ -23,7 +23,7 @@ No prior security knowledge assumed.
 Modern apps follow this pattern:
 
 ```
-Login once → Receive tokens → Use tokens to access APIs
+Login once -> Receive tokens -> Use tokens to access APIs
 ```
 
 Passwords prove identity **once**.
@@ -43,7 +43,7 @@ Tokens prove identity **repeatedly**.
 
 ---
 
-## Authentication Methods (Least → Most Secure)
+## Authentication Methods (Least -> Most Secure)
 
 | Level | Method                  | What it is                     | Pros                      | Common Pitfalls     |
 | ----: | ----------------------- | ------------------------------ | ------------------------- | ------------------- |
@@ -130,7 +130,7 @@ flowchart LR
 **Why passwords are dangerous**
 
 * Full account access
-* If leaked → total compromise
+* If leaked -> total compromise
 * Unsafe to send repeatedly
 
 **How passwords are protected**
@@ -164,8 +164,8 @@ flowchart LR
 
 **Analogy**
 
-* Password → house key
-* Token → temporary wristband
+* Password -> house key
+* Token -> temporary wristband
 
 ---
 
@@ -289,8 +289,8 @@ flowchart LR
 
 ### The problem
 
-* Short access tokens → frequent logouts
-* Long access tokens → security risk
+* Short access tokens -> frequent logouts
+* Long access tokens -> security risk
 
 ### The solution
 
@@ -330,13 +330,15 @@ flowchart TD
 **Text flow:**
 ```
 Login
-  ↓
+  |
+  v
 Access Token (short)
 Refresh Token (long)
 
 Access expires
-  ↓
-Refresh Token → New Access Token
+  |
+  v
+Refresh Token -> New Access Token
 ```
 
 ---
@@ -537,13 +539,13 @@ Old hotel key stops working when a new one is issued.
 ## Final Mental Model (Remember This)
 
 ```
-Password      → proves identity once
-Access Token  → proves identity repeatedly
-Refresh Token → renews access safely
-Stateful      → server remembers users
-Stateless     → server remembers nothing
-XSS           → steals tokens via JavaScript
-CSRF          → tricks browser into bad requests
+Password      -> proves identity once
+Access Token  -> proves identity repeatedly
+Refresh Token -> renews access safely
+Stateful      -> server remembers users
+Stateless     -> server remembers nothing
+XSS           -> steals tokens via JavaScript
+CSRF          -> tricks browser into bad requests
 ```
 
 If this makes sense, authentication has officially **clicked**.
