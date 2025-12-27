@@ -72,9 +72,9 @@ flowchart LR
     A[Login Request] -->|Verify Identity| B[User Identity Confirmed]
     B -->|Next Step| C[Authorization]
     
-    style A fill:#e1c4ff
-    style B fill:#c4ffc4
-    style C fill:#ffc484
+    style A fill:#9B59B6,color:#fff
+    style B fill:#2ECC71,color:#fff
+    style C fill:#F39C12,color:#fff
 ```
 
 **Key points:**
@@ -110,8 +110,8 @@ flowchart LR
 flowchart LR
     A[Login Request] -->|username + password| B[base64 encoded]
     
-    style A fill:#e1c4ff
-    style B fill:#c4ffc4
+    style A fill:#9B59B6,color:#fff
+    style B fill:#2ECC71,color:#fff
 ```
 
 **Key points:**
@@ -183,10 +183,10 @@ flowchart LR
     B -->|Authorization Header| C[API]
     C -->|Valid Token| D[Success]
     
-    style A fill:#c4e1ff
-    style B fill:#ffc4c4
-    style C fill:#e1c4ff
-    style D fill:#c4ffc4
+    style A fill:#3498DB,color:#fff
+    style B fill:#E74C3C,color:#fff
+    style C fill:#9B59B6,color:#fff
+    style D fill:#2ECC71,color:#fff
 ```
 
 **Key points:**
@@ -228,10 +228,10 @@ flowchart LR
     D[JWT Sample Payload<br/>user_id: 123<br/>exp: 2025-09-10]
     C -.-> D
     
-    style A fill:#c4e1ff
-    style B fill:#c4ffc4
-    style C fill:#e1c4ff
-    style D fill:#fff9c4
+    style A fill:#3498DB,color:#fff
+    style B fill:#2ECC71,color:#fff
+    style C fill:#9B59B6,color:#fff
+    style D fill:#F39C12,color:#fff
 ```
 
 **Key points:**
@@ -320,11 +320,11 @@ flowchart TD
     C --> E
     E --> B
     
-    style A fill:#c4ffc4
-    style B fill:#c4e1ff
-    style C fill:#ffc484
-    style D fill:#ffc4c4
-    style E fill:#c4ffc4
+    style A fill:#2ECC71,color:#fff
+    style B fill:#3498DB,color:#fff
+    style C fill:#F39C12,color:#fff
+    style D fill:#E74C3C,color:#fff
+    style E fill:#2ECC71,color:#fff
 ```
 
 **Text flow:**
@@ -401,13 +401,13 @@ flowchart TD
     E --> F[SAML<br/>For enterprise tools<br/>Examples: Salesforce, internal<br/>Older, XML-based]
     E --> G[OAuth2<br/>For consumer apps<br/>Example: Login with Google<br/>Modern, JSON-based]
     
-    style A fill:#c4ffc4
-    style B fill:#e1c4ff
-    style C fill:#e1c4ff
-    style D fill:#e1c4ff
-    style E fill:#fff9c4
-    style F fill:#ffc484
-    style G fill:#c4e1ff
+    style A fill:#2ECC71,color:#fff
+    style B fill:#9B59B6,color:#fff
+    style C fill:#9B59B6,color:#fff
+    style D fill:#9B59B6,color:#fff
+    style E fill:#F39C12,color:#fff
+    style F fill:#E67E22,color:#fff
+    style G fill:#3498DB,color:#fff
 ```
 
 **Key points:**
