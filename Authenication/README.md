@@ -61,6 +61,27 @@ Tokens prove identity **repeatedly**.
 
 ## Authentication vs Authorization
 
+### What is Authentication?
+
+> **Authentication = Who are you**
+
+Authentication is the **first step before authorization**. Before you can access data or perform actions, the system needs to know who you are.
+
+```mermaid
+flowchart LR
+    A[Login Request] -->|Verify Identity| B[User Identity Confirmed]
+    B -->|Next Step| C[Authorization]
+    
+    style A fill:#e1c4ff
+    style B fill:#c4ffc4
+    style C fill:#ffc484
+```
+
+**Key points:**
+* Authentication = Who are you
+* First step before authorization
+* Before you can access data or perform actions the system needs to know who you are
+
 ### Authentication
 
 > **Who are you?**
@@ -80,6 +101,23 @@ Tokens prove identity **repeatedly**.
 ---
 
 ## Passwords vs Tokens (Why Tokens Exist)
+
+### Basic Authentication
+
+> **Basic Authentication** uses username + password encoded in base64
+
+```mermaid
+flowchart LR
+    A[Login Request] -->|username + password| B["base64(username + password)"]
+    
+    style A fill:#e1c4ff
+    style B fill:#c4ffc4
+```
+
+**Key points:**
+* Username + password
+* Base64 encoded: simple encoding that's easily reversible
+* Rarely used today outside internal tools (Simple but insecure unless wrapped in HTTPS)
 
 ### Passwords
 
@@ -135,6 +173,27 @@ Tokens prove identity **repeatedly**.
 
 > An **access token** is what the client sends to the API.
 
+### Bearer Token Authentication
+
+Bearer tokens are the standard approach in API design today. They are fast and stateless.
+
+```mermaid
+flowchart LR
+    A[Client] -->|Bearer access_token| B[Token]
+    B -->|Authorization Header| C[API]
+    C -->|Valid Token| D[Success]
+    
+    style A fill:#c4e1ff
+    style B fill:#ffc4c4
+    style C fill:#e1c4ff
+    style D fill:#c4ffc4
+```
+
+**Key points:**
+* `Bearer <access_token>`
+* Standard approach in API design today
+* Fast and Stateless
+
 ### How it's used
 
 ```http
@@ -154,6 +213,31 @@ Authorization: Bearer <access_token>
 * Verified via cryptographic signature
 * Enables **stateless APIs**
 * Faster and more scalable
+
+---
+
+## OAuth2 + JWTs
+
+OAuth2 with JWTs is used in "Login with Google", "Login with GitHub", "Login with Facebook" and similar flows. JWTs are stateless, meaning you don't need to store sessions.
+
+```mermaid
+flowchart LR
+    A[User] -->|Login| B[Google]
+    B -->|Issues JWT| C[App]
+    
+    D["JWT Sample Payload<br/>{<br/>  \"user_id\": \"123\",<br/>  \"exp\": \"2025-09-10\"<br/>}"]
+    C -.-> D
+    
+    style A fill:#c4e1ff
+    style B fill:#c4ffc4
+    style C fill:#e1c4ff
+    style D fill:#fff9c4
+```
+
+**Key points:**
+* Used in login with Google, GitHub, Facebook
+* JWTs are stateless => you don't need to store sessions
+* *or opaque access_token depending on your configuration
 
 ---
 
@@ -227,6 +311,23 @@ Authorization: Bearer <access_token>
 
 ### Typical Flow
 
+```mermaid
+flowchart TD
+    A[Login] --> B[Access Token short-lived]
+    A --> C[Refresh Token long-lived]
+    B -->|Expires| D[Access Token Expired]
+    D -->|Use Refresh Token| E[Request New Access Token]
+    C --> E
+    E --> B
+    
+    style A fill:#c4ffc4
+    style B fill:#c4e1ff
+    style C fill:#ffc484
+    style D fill:#ffc4c4
+    style E fill:#c4ffc4
+```
+
+**Text flow:**
 ```
 Login
   ↓
@@ -283,6 +384,36 @@ user_id
 expires_at
 device_id
 ```
+
+---
+
+## SSO and Identity Protocols
+
+Single Sign-On (SSO) allows users to log in once and access multiple applications. Identity protocols define how apps securely exchange user login information.
+
+```mermaid
+flowchart TD
+    A[One Login] --> B[Gmail]
+    A --> C[Drive]
+    A --> D[Calendar]
+    
+    E[Identity Protocols]
+    E --> F["SAML<br/>For enterprise tools<br/>Examples: Salesforce, internal<br/>Older, XML-based"]
+    E --> G["OAuth2<br/>For consumer apps<br/>Example: 'Login with Google'<br/>Modern, JSON-based"]
+    
+    style A fill:#c4ffc4
+    style B fill:#e1c4ff
+    style C fill:#e1c4ff
+    style D fill:#e1c4ff
+    style E fill:#fff9c4
+    style F fill:#ffc484
+    style G fill:#c4e1ff
+```
+
+**Key points:**
+* Identity protocols => define how apps securely exchange user login info
+* **SAML**: For enterprise tools (Salesforce, internal) - Older, XML-based
+* **OAuth2**: For consumer apps ("Login with Google") - Modern, JSON-based
 
 ---
 
