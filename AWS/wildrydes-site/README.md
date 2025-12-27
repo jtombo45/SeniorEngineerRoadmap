@@ -15,58 +15,44 @@ Wild Rydes is a unicorn ride-sharing web application that demonstrates a full-st
 
 ## Architecture
 
+```mermaid
+flowchart TD
+    A[User Browser] -->|1. HTTPS Request| B[AWS Amplify<br/>Frontend Hosting]
+    
+    B -->|2. Auth Requests| C[Amazon Cognito<br/>User Pool]
+    C -->|3. Returns JWT Token| B
+    
+    B -->|4. API Request<br/>with JWT Token| D[API Gateway<br/>REST API]
+    D -->|5. Validate Token| C
+    D -->|6. Invoke Function| E[AWS Lambda<br/>Backend Logic]
+    
+    E -->|7. IAM Role| F[IAM<br/>Permissions]
+    F -->|8. Grants Access| G[DynamoDB<br/>Rides Table]
+    E -->|9. PutItem| G
+    G -->|10. Return| E
+    E -->|11. Response| D
+    D -->|12. JSON Response| B
+    B -->|13. Display Result| A
+    
+    H[GitHub<br/>Repository] -->|Push Code| B
+    
+    style A fill:#3498DB,color:#fff
+    style B fill:#3498DB,color:#fff
+    style C fill:#2ECC71,color:#fff
+    style D fill:#9B59B6,color:#fff
+    style E fill:#F39C12,color:#fff
+    style F fill:#9B59B6,color:#fff
+    style G fill:#2ECC71,color:#fff
+    style H fill:#E67E22,color:#fff
 ```
-┌─────────────┐
-│   Browser   │
-└──────┬──────┘
-       │ HTTPS
-       ▼
-┌─────────────────────────────────────────────────────────┐
-│              AWS Amplify (Hosting)                       │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐              │
-│  │ index.html│  │signin.html│  │ride.html │              │
-│  └──────────┘  └──────────┘  └──────────┘              │
-└──────┬──────────────────────────────────────────────────┘
-       │
-       │ Auth Requests
-       ▼
-┌─────────────────────────────────────────────────────────┐
-│           Amazon Cognito (User Pool)                     │
-│  • User Registration                                     │
-│  • Email Verification                                    │
-│  • Sign In / Sign Out                                    │
-│  • JWT Token Generation                                  │
-└──────┬──────────────────────────────────────────────────┘
-       │
-       │ API Requests (with JWT)
-       ▼
-┌─────────────────────────────────────────────────────────┐
-│         API Gateway (REST API)                           │
-│  • /ride endpoint                                        │
-│  • Cognito Authorizer (validates JWT)                    │
-└──────┬──────────────────────────────────────────────────┘
-       │
-       │ Invokes
-       ▼
-┌─────────────────────────────────────────────────────────┐
-│           AWS Lambda (Backend Logic)                      │
-│  • Processes ride requests                               │
-│  • Selects unicorn from fleet                            │
-│  • Records ride in database                             │
-└──────┬──────────────────────────────────────────────────┘
-       │
-       │ Writes
-       ▼
-┌─────────────────────────────────────────────────────────┐
-│           DynamoDB (Rides Table)                         │
-│  • Stores ride history                                   │
-│  • RideId (Partition Key)                                │
-└─────────────────────────────────────────────────────────┘
 
-IAM Roles & Policies (not shown):
-  • Lambda execution role (allows DynamoDB writes)
-  • API Gateway authorizer (validates Cognito tokens)
-```
+**Key components:**
+* **AWS Amplify** - Hosts static frontend files (HTML, CSS, JavaScript) and handles CI/CD
+* **Amazon Cognito** - Manages user authentication and issues JWT tokens
+* **API Gateway** - REST API endpoint that validates tokens and routes requests
+* **AWS Lambda** - Serverless function that processes ride requests
+* **DynamoDB** - NoSQL database that stores ride records
+* **IAM** - Manages permissions between services
 
 ## Prerequisites
 
