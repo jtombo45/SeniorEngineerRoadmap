@@ -1,348 +1,549 @@
-🌍 Simple Node.js API — Beginner-Friendly Guide (With Real Server Code Concepts)
+# Wild Horizons API: Building a REST API from Scratch
 
-This project is a small Node.js server built with the native http module—no frameworks, no libraries. It’s perfect for beginners learning how APIs work under the hood, and still clean enough for developers who want to understand low-level fundamentals.
+### A Beginner-Friendly Guide to Node.js APIs, Routing, and Data Filtering
 
-⸻
+This project demonstrates **how to build a REST API using only Node.js core modules**, how to **handle different request types**, **extract path and query parameters**, **filter data**, and **structure clean server code** — perfect for understanding what frameworks like Express do under the hood.
 
-🚀 What This API Does
+The goal is to answer:
 
-Users can retrieve travel destination data in three ways:
+* How do you build a REST API in Node.js?
+* How do you handle different routes and methods?
+* How do you extract path parameters?
+* How do you extract query parameters?
+* How do you filter and return data?
+* How do you structure API responses?
 
-1. Get ALL data
+No prior API knowledge assumed.
 
+---
+
+## TL;DR
+
+- **REST API** = Style of designing APIs using HTTP methods (GET, POST, etc.)
+- **Path Parameters** = Data in the URL path (e.g., `/api/continent/asia`)
+- **Query Parameters** = Data after `?` in URL (e.g., `?country=turkey`)
+- **Routing** = Determining which code handles which request
+- **Filtering** = Selecting specific data based on criteria
+- **JSON Response** = Data formatted as JSON for clients
+
+---
+
+## Where to start reading
+
+If you're new, read in this order:
+
+1. What is a REST API?
+2. HTTP Module Basics
+3. Request-Response Cycle
+4. Path Parameters
+5. Query Parameters
+6. Response Handling
+
+---
+
+## Quick mental model (diagram)
+
+```mermaid
+flowchart TD
+    A[Client Request] -->|GET /api| B[Node.js Server]
+    A -->|GET /api/continent/asia| B
+    A -->|GET /api?country=turkey| B
+    
+    B -->|Parse URL| C[Identify Route]
+    C -->|Extract Parameters| D[Path/Query Params]
+    D -->|Filter Data| E[Business Logic]
+    E -->|Format Response| F[JSON Response]
+    F -->|Send to Client| A
+    
+    style A fill:#3498DB,color:#fff
+    style B fill:#2ECC71,color:#fff
+    style C fill:#F39C12,color:#fff
+    style D fill:#9B59B6,color:#fff
+    style E fill:#F39C12,color:#fff
+    style F fill:#2ECC71,color:#fff
+```
+
+**Key points:**
+- Client sends request -> Server parses URL -> Extracts parameters -> Filters data -> Returns JSON
+
+---
+
+# 1) What is a REST API?
+
+**REST (Representational State Transfer)** is a style of designing APIs that uses standard HTTP methods.
+
+### API Endpoints in This Project
+
+The Wild Horizons API provides three ways to get travel destination data:
+
+1. **Get ALL data**
+   ```
 GET /api
+   ```
 
-2. Filter by path parameter
+2. **Filter by path parameter**
+   ```
+   GET /api/continent/asia
+   GET /api/continent/europe
+   ```
 
-GET /api/continent/india
-
-3. Filter using query parameters
-
+3. **Filter using query parameters**
+   ```
+   GET /api?country=turkey
 GET /api?country=turkey&is_open_to_public=true
+   ```
 
-All responses are returned as JSON.
+All responses return JSON.
 
-⸻
+---
 
-🧠 What You Will Learn
+# 2) HTTP Module: Building the Foundation
 
-This project teaches the real fundamentals beneath Express.js and other frameworks:
+The Node.js `http` module is the foundation for building web servers and APIs.
 
-✔ Core http Module
-	•	creating a server
-	•	handling requests & writing responses
-	•	sending status codes (200, 404, 500, etc.)
-	•	setting headers (Content-Type)
-	•	writing JSON
-	•	routing based on req.url
-	•	filtering data
-	•	extracting path parameters
-	•	extracting query parameters (URLSearchParams)
+### Understanding the HTTP Module
 
-✔ Understanding Client–Server
+Think of your Node.js server like a restaurant:
+* **Browser** → customer
+* **Request** → customer order
+* **Response** → the food
+* **HTTP module** → the kitchen that lets you cook and serve
 
-You’ll see how a client (browser, phone app, smartwatch, etc.) sends a request, and the server returns a response.
+```mermaid
+flowchart LR
+    A[Client] -->|HTTP Request| B[HTTP Module]
+    B -->|Process| C[Server Logic]
+    C -->|Generate| D[HTTP Response]
+    D -->|Send Back| A
+    
+    style A fill:#3498DB,color:#fff
+    style B fill:#2ECC71,color:#fff
+    style C fill:#F39C12,color:#fff
+    style D fill:#2ECC71,color:#fff
+```
 
-Client  ----request---->  Server
-Client  <---response----  Server
+### Minimal Server Example
 
-✔ REST API Basics
-
-REST is a style of designing APIs.
-Examples:
-
-/api/courses
-/api/topics
-/api?topic=node&price=free
-
-
-⸻
-
-📦 Understanding package.json (For Absolute Beginners)
-
-Think of package.json like a project’s blueprint:
-	•	Project metadata (name, version, author, description)
-	•	Dependency management
-	•	Scripts (like npm start)
-	•	Makes collaboration easy
-
-You can create it:
-
-npm init
-
-or manually.
-
-⸻
-
-🔧 How the HTTP Module Works (Beginner-Friendly Explanation)
-
-Think of your Node server like a tiny restaurant:
-	•	Browser → customer
-	•	Request → customer order
-	•	Response → the food
-	•	HTTP module → the kitchen that lets you cook and serve
-
-Minimal Example
-
-import http from "node:http";
+```javascript
+import http from 'node:http';
 
 const server = http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify({ message: "Hello from a Node server!" }));
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ message: 'Hello from a Node server!' }));
 });
 
 server.listen(3000, () => {
-  console.log("Server running at http://localhost:3000");
+  console.log('Server running at http://localhost:3000');
 });
+```
 
+---
 
-⸻
+# 3) Request-Response Cycle
 
-🧩 The Request–Response Cycle
+Understanding how requests and responses work is fundamental to building APIs.
 
-🔹 Request
+### The Request Object
 
-Contains:
-	•	method (GET, POST, etc.)
-	•	URL (/api, /api/continent/europe)
-	•	headers
-	•	query parameters
-	•	path parameters
+The `req` object contains information about the incoming request:
 
-🔹 Server Handles the Request
-	•	filters data
-	•	validates data
-	•	builds a response
-	•	sends errors if needed
+```mermaid
+flowchart TD
+    A[Request Object] -->|Contains| B[Method GET/POST]
+    A -->|Contains| C[URL /api/continent/asia]
+    A -->|Contains| D[Headers Content-Type]
+    A -->|Contains| E[Query Parameters ?country=turkey]
+    
+    style A fill:#3498DB,color:#fff
+    style B fill:#F39C12,color:#fff
+    style C fill:#9B59B6,color:#fff
+    style D fill:#2ECC71,color:#fff
+    style E fill:#9B59B6,color:#fff
+```
 
-🔹 Response
-	•	JSON, HTML, images, etc.
-	•	includes headers (Content-Type)
-	•	includes status codes (200 = OK, 404 = Not Found)
+**Request contains:**
+* `req.method` – HTTP method (GET, POST, etc.)
+* `req.url` – The URL path (`/api`, `/api/continent/europe`)
+* `req.headers` – HTTP headers
+* `req.body` – Request body (for POST/PUT requests)
 
-⸻
+### The Response Object
 
-📡 API Routes Explained (Matches Your server.js)
+The `res` object is used to send responses back to the client:
 
-1. GET /api
+**Response includes:**
+* Status code (200 = OK, 404 = Not Found, 500 = Error)
+* Headers (Content-Type: application/json)
+* Body (the actual data)
 
-Returns all destination data.
+---
 
-⸻
+# 4) Routing: Handling Different Endpoints
 
-2. GET /api/continent/:continent
+Routing means determining which code handles which URL and HTTP method.
 
-Path parameter example:
+### Route Matching
 
-/api/continent/asia
-/api/continent/europe
+```mermaid
+flowchart TD
+    A[Incoming Request] -->|Check URL| B{Matches Route?}
+    B -->|GET /api| C[Return All Data]
+    B -->|GET /api/continent/:name| D[Return Filtered by Continent]
+    B -->|GET /api?params| E[Return Filtered by Query]
+    B -->|No Match| F[Return 404]
+    
+    style A fill:#3498DB,color:#fff
+    style B fill:#F39C12,color:#fff
+    style C fill:#2ECC71,color:#fff
+    style D fill:#2ECC71,color:#fff
+    style E fill:#2ECC71,color:#fff
+    style F fill:#E74C3C,color:#fff
+```
 
-Server extracts the continent:
+### Route 1: Get All Data
 
-const continent = req.url.split("/").pop();
-console.log("Requested continent:", continent);
+```javascript
+if (req.url === '/api' && req.method === 'GET') {
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(allDestinations));
+}
+```
 
-Filters the data:
+---
 
-const filtered = destinations.filter((destination) => {
+# 5) Path Parameters: Extracting Data from URLs
+
+**Path parameters** are values embedded in the URL path itself.
+
+### Understanding Path Parameters
+
+```
+GET /api/continent/asia
+GET /api/continent/europe
+GET /api/continent/africa
+```
+
+The continent name (`asia`, `europe`, `africa`) is a path parameter.
+
+```mermaid
+flowchart LR
+    A[/api/continent/asia] -->|Extract| B[continent = asia]
+    B -->|Filter Data| C[Return Asian Destinations]
+    
+    D[Path Parameter = Data in URL Path]
+    
+    style A fill:#3498DB,color:#fff
+    style B fill:#F39C12,color:#fff
+    style C fill:#2ECC71,color:#fff
+    style D fill:#9B59B6,color:#fff
+```
+
+### Extracting Path Parameters
+
+```javascript
+if (req.url.startsWith('/api/continent/') && req.method === 'GET') {
+  // Extract the continent name from the URL
+  const continent = req.url.split('/').pop();
+  console.log('Requested continent:', continent);
+  
+  // Filter data based on continent
+  const filtered = destinations.filter(destination => {
   return destination.continent.toLowerCase() === continent.toLowerCase();
 });
 
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(filtered));
+}
+```
 
-⸻
+**How it works:**
+1. Check if URL starts with `/api/continent/`
+2. Split URL by `/` and get last part (continent name)
+3. Filter destinations array
+4. Return filtered results as JSON
 
-3. GET /api?country=turkey&is_open_to_public=true
+---
 
-Uses query params via:
+# 6) Query Parameters: Filtering with URL Parameters
 
+**Query parameters** are key-value pairs after `?` in the URL.
+
+### Understanding Query Parameters
+
+```
+GET /api?country=turkey
+GET /api?country=turkey&is_open_to_public=true
+GET /api?continent=asia&country=india
+```
+
+```mermaid
+flowchart LR
+    A[/api?country=turkey] -->|Parse| B[Query Object]
+    B -->|Extract| C[country: turkey]
+    C -->|Filter Data| D[Return Matching Results]
+    
+    E[Query Parameters = Data after ? in URL]
+    
+    style A fill:#3498DB,color:#fff
+    style B fill:#9B59B6,color:#fff
+    style C fill:#F39C12,color:#fff
+    style D fill:#2ECC71,color:#fff
+    style E fill:#9B59B6,color:#fff
+```
+
+### Extracting Query Parameters
+
+```javascript
+if (req.url.startsWith('/api') && req.method === 'GET') {
+  // Parse the URL to extract query parameters
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const params = url.searchParams;
+  
+  // Get query parameter values
+  const country = params.get('country');
+  const isOpen = params.get('is_open_to_public');
+  
+  // Filter data based on query parameters
+  let filtered = destinations;
+  if (country) {
+    filtered = filtered.filter(d => 
+      d.country.toLowerCase() === country.toLowerCase()
+    );
+  }
+  if (isOpen) {
+    filtered = filtered.filter(d => 
+      d.is_open_to_public === (isOpen === 'true')
+    );
+  }
+  
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(filtered));
+}
+```
+
+**Using URLSearchParams:**
+```javascript
 const url = new URL(req.url, `http://${req.headers.host}`);
 const params = url.searchParams;
 
+// Get single parameter
+const country = params.get('country');
 
-⸻
-
-🧰 Error Handling (Actual Code from Your Server)
-
-handleResponse(res, {
-  statusCode: 404,
-  isError: true,
-  message: "The requested route does not exist"
-});
-
-Return example:
-
-{
-  "error": "Not Found",
-  "message": "The requested route does not exist"
+// Check if parameter exists
+if (params.has('is_open_to_public')) {
+  // Do something
 }
+```
 
+---
 
-⸻
+# 7) Response Handling: Structuring Clean Responses
 
-🛠 Helper Function (Matches Your Code)
+Creating helper functions makes your code cleaner and more maintainable.
 
-Your handleResponse() normalizes all responses:
+### Response Helper Function
 
-function handleResponse(
-  res,
-  {
+```mermaid
+flowchart LR
+    A[Response Helper] -->|Takes| B[Status Code]
+    A -->|Takes| C[Data/Error]
+    A -->|Sets| D[Headers]
+    A -->|Sends| E[JSON Response]
+    
+    F[Helper = Clean, Reusable Code]
+    
+    style A fill:#9B59B6,color:#fff
+    style B fill:#F39C12,color:#fff
+    style C fill:#3498DB,color:#fff
+    style D fill:#2ECC71,color:#fff
+    style E fill:#2ECC71,color:#fff
+    style F fill:#F39C12,color:#fff
+```
+
+### Example Helper Function
+
+```javascript
+function sendResponse(res, {
     statusCode = 200,
     data = null,
-    contentType = "application/json",
+  contentType = 'application/json',
     isError = false,
-    message = ""
-  }
-) {
-  res.setHeader("Content-Type", contentType);
+  message = ''
+}) {
+  res.setHeader('Content-Type', contentType);
   res.statusCode = statusCode;
 
   if (isError) {
     res.end(JSON.stringify({
-      error: statusCodeToErrorMessage(statusCode),
+      error: getErrorMessage(statusCode),
       message
     }));
   } else {
     res.end(JSON.stringify(data));
   }
 }
+```
 
-This makes your server cleaner and avoids repetitive .setHeader, .statusCode, .end.
+**Benefits:**
+* Consistent response format
+* Less repetitive code
+* Easier to maintain
+* Centralized error handling
 
-⸻
+---
 
-🧭 How to Read Node.js Documentation (Beginner Guide)
+# 8) Error Handling
 
-Reading docs is a skill — here’s a simple system.
+APIs should always handle errors gracefully and return appropriate status codes.
 
-⸻
+### Common HTTP Status Codes
 
-✔ Step 1: Start With the Overview
+| Code | Meaning | Use Case |
+| ---- | ------- | -------- |
+| 200 | OK | Successful request |
+| 404 | Not Found | Route doesn't exist |
+| 500 | Internal Server Error | Server error occurred |
+| 400 | Bad Request | Invalid request data |
 
-Go to:
-https://nodejs.org/api/http.html
+### Error Response Example
 
-Scroll to the top summary — don’t start with the giant walls of text.
-
-⸻
-
-✔ Step 2: Focus on These Sections
-
-Beginner-friendly order:
-	1.	http.createServer
-	2.	IncomingMessage (req)
-	3.	ServerResponse (res)
-	4.	Events (request, error, etc.)
-
-⸻
-
-✔ Step 3: Look for Examples FIRST
-
-Node docs always include examples above the deep details.
-They look like this:
-
-const server = http.createServer((req, res) => {});
-
-Copy these before reading heavy explanations.
-
-⸻
-
-✔ Step 4: Use MDN for Definitions
-
-When you don’t know a term:
-	•	“What is a MIME type?” → MDN
-	•	“What’s the difference between GET and POST?” → MDN
-	•	“What does writeHead do?” → MDN
-
-MDN is MUCH easier for beginners.
-
-⸻
-
-✔ Step 5: Apply What You Read
-
-If the docs say:
-
-res.setHeader(name, value)
-
-Try it immediately:
-
-res.setHeader("Content-Type", "application/json");
-
-Learning by applying beats reading 100% of the time.
-
-⸻
-
-🧪 How to Run and Test the API
-
-1. Start the server
-
-cd <your-folder>
-node server.js
-
-2. Make requests
-
-✔ Using curl
-
-curl http://localhost:8000/api
-curl http://localhost:8000/api/continent/asia
-curl "http://localhost:8000/api?country=turkey"
-
-✔ Using Postman
-	•	Create GET request
-	•	Paste URL
-	•	Send
-
-✔ Using Browser
-Just type:
-
-http://localhost:8000/api
-
-
-⸻
-
-🧳 Path Parameters Example (Matches Your Code)
-
-else if (req.url.startsWith('/api/continent/') && req.method === 'GET') {
-  const continent = req.url.split('/').pop();
-  console.log(continent);
-
-  const filtered = destinations.filter(destination =>
-    destination.continent.toLowerCase() === continent.toLowerCase()
-  );
-
-  handleResponse(res, { statusCode: 200, data: filtered });
+```javascript
+if (routeNotFound) {
+  sendResponse(res, {
+    statusCode: 404,
+    isError: true,
+    message: 'The requested route does not exist'
+  });
 }
+```
 
-⸻
+**Returns:**
+```json
+{
+  "error": "Not Found",
+  "message": "The requested route does not exist"
+}
+```
 
-🧳 Util Query Parameters Update
-export const getDataByQueryParams = (data, queryObj) => {
+---
 
-  const { continent, country, is_open_to_public } = queryObj
+# 9) Understanding package.json
 
-  if (continent) {
-    data = data.filter(destination =>
-      destination.continent.toLowerCase() === continent.toLowerCase()
-    )
-  }
-  .
-  .
-  .
-  return data
-} 
+The `package.json` file is your project's blueprint.
 
-⸻
+### What It Contains
 
-🎓 Final Notes
+```mermaid
+flowchart TD
+    A[package.json] -->|Contains| B[Project Metadata<br/>name, version]
+    A -->|Contains| C[Dependencies<br/>packages needed]
+    A -->|Contains| D[Scripts<br/>npm start, npm test]
+    
+    E[package.json = Project Configuration]
+    
+    style A fill:#9B59B6,color:#fff
+    style B fill:#3498DB,color:#fff
+    style C fill:#2ECC71,color:#fff
+    style D fill:#F39C12,color:#fff
+    style E fill:#F39C12,color:#fff
+```
 
-By building this project, you’ve learned:
-	•	how HTTP works at a fundamental level
-	•	how to route requests manually
-	•	how to serialize JSON
-	•	how to extract path + query params
-	•	how to filter data
-	•	how to structure cleaner response helpers
-	•	how to read Node.js docs effectively
+**Key sections:**
+* **Metadata** – name, version, description, author
+* **Dependencies** – packages your project needs
+* **Scripts** – commands you can run with `npm run`
 
-This is solid foundational knowledge that makes learning Express, Fastify, or even backend frameworks in other languages MUCH easier.
+**Create it:**
+```bash
+npm init
+```
 
+---
 
+## Testing the API
+
+### Using curl
+
+```bash
+# Get all data
+curl http://localhost:8000/api
+
+# Get by continent
+curl http://localhost:8000/api/continent/asia
+
+# Get with query parameters
+curl "http://localhost:8000/api?country=turkey"
+```
+
+### Using Browser
+
+Simply navigate to:
+```
+http://localhost:8000/api
+http://localhost:8000/api/continent/europe
+http://localhost:8000/api?country=turkey
+```
+
+### Using Postman
+
+1. Create a new GET request
+2. Enter the URL
+3. Click Send
+4. View the JSON response
+
+---
+
+## Final Mental Model (Remember This)
+
+```
+REST API        -> Style of API design using HTTP methods
+Path Parameter  -> Data embedded in URL path (/api/continent/asia)
+Query Parameter -> Data after ? in URL (?country=turkey)
+Routing         -> Determining which code handles which request
+Filtering       -> Selecting specific data based on criteria
+JSON Response   -> Data formatted as JSON for clients
+Status Code     -> HTTP response code (200, 404, 500)
+Content-Type    -> Header telling client what type of data
+URLSearchParams -> Object for parsing query parameters
+Helper Function -> Reusable function for common tasks
+```
+
+If this makes sense, building REST APIs has officially **clicked**.
+
+---
+
+## What You've Learned
+
+By building this project, you've learned:
+
+* How HTTP works at a fundamental level
+* How to route requests manually
+* How to serialize JSON responses
+* How to extract path and query parameters
+* How to filter data
+* How to structure clean response helpers
+* How to handle errors properly
+
+This foundational knowledge makes learning frameworks like Express, Fastify, or backend frameworks in other languages much easier.
+
+---
+
+## Glossary (Fast Reference)
+
+* **REST API** – Style of API design using HTTP methods and standard conventions
+* **Path Parameter** – Value embedded in the URL path (e.g., `/api/continent/asia`)
+* **Query Parameter** – Key-value pair after `?` in URL (e.g., `?country=turkey`)
+* **Routing** – Process of determining which code handles which request
+* **Filtering** – Selecting specific data based on criteria
+* **JSON** – JavaScript Object Notation (data format for APIs)
+* **HTTP Method** – Type of request (GET, POST, PUT, DELETE)
+* **Status Code** – Number indicating request result (200 = success, 404 = not found)
+* **Content-Type** – HTTP header specifying data format (application/json, text/html)
+* **URLSearchParams** – Object for parsing and working with query parameters
+* **Helper Function** – Reusable function that simplifies common tasks
+* **package.json** – Configuration file for Node.js projects
+* **Endpoint** – Specific URL path that the API responds to
+
+---
+
+This project teaches the fundamentals of building REST APIs with Node.js, providing a solid foundation for understanding what frameworks do under the hood.
