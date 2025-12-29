@@ -674,5 +674,3 @@ Replace these placeholders:
 
 * **Rules:** `<your ABAC conditions>`
 
-If you paste your project's "users + resources + rules", I can tailor this into a project-specific README section without turning it into a novel.
-
