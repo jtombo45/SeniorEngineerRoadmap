@@ -52,8 +52,9 @@ flowchart TD
     B -->|Set Headers| E[HTTP Response]
     E -->|Send to Client| A
     
-    F[POST Request] -->|Parse Body| G[Extract Data]
-    G -->|Sanitize Input| H[Remove Dangerous Content]
+    F[POST Request from Client] -->|Parse Body| B
+    B -->|Extract Data| G[Sanitize Input]
+    G -->|Remove Dangerous Content| H[Save to File System]
     H -->|Write to File| D
     
     style A fill:#3498DB,color:#fff
