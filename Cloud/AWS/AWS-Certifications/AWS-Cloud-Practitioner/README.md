@@ -20,28 +20,37 @@
 ## 1. TL;DR Map
 
 ```mermaid
-mindmap
-  root((AWS CLF-C02))
-    Cloud Concepts
-      Types: SaaS/PaaS/IaaS
-      Deployment: Cloud/Hybrid/On-Premise
-      Six Benefits
-      Global Infrastructure
-      Shared Responsibility
-    Security & Compliance
-      IAM
-      Security Services
-      Compliance Programs
-    Technology Services
-      Compute
-      Storage
-      Database
-      Networking
-      Integration
-    Billing & Pricing
-      Support Tiers
-      EC2 Pricing Models
-      Cost Management
+flowchart TD
+    A[AWS CLF-C02] --> B[Cloud Concepts]
+    A --> C[Security & Compliance]
+    A --> D[Technology Services]
+    A --> E[Billing & Pricing]
+    
+    B --> B1[Types: SaaS/PaaS/IaaS]
+    B --> B2[Deployment Models]
+    B --> B3[Six Benefits]
+    B --> B4[Global Infrastructure]
+    B --> B5[Shared Responsibility]
+    
+    C --> C1[IAM]
+    C --> C2[Security Services]
+    C --> C3[Compliance Programs]
+    
+    D --> D1[Compute]
+    D --> D2[Storage]
+    D --> D3[Database]
+    D --> D4[Networking]
+    D --> D5[Integration]
+    
+    E --> E1[Support Tiers]
+    E --> E2[EC2 Pricing Models]
+    E --> E3[Cost Management]
+    
+    style A fill:#3498DB,color:#fff
+    style B fill:#2ECC71,color:#fff
+    style C fill:#E74C3C,color:#fff
+    style D fill:#F39C12,color:#fff
+    style E fill:#9B59B6,color:#fff
 ```
 
 **Top Exam Signals (10 bullets):**
@@ -78,12 +87,12 @@ mindmap
 
 **Global Infrastructure Hierarchy:**
 ```mermaid
-graph TD
-    A[Global] --> B[Regions<br/>Physical locations]
-    B --> C[Availability Zones<br/>Data centers<br/>2-3 per region]
-    C --> D[Data Centers<br/>AWS owned]
-    E[Edge Locations<br/>CDN endpoints<br/>Partner owned] --> A
-    F[Points of Presence<br/>Internet access points] --> A
+flowchart TD
+    A[Global] --> B[Regions - Physical locations]
+    B --> C[Availability Zones - Data centers - 2-3 per region]
+    C --> D[Data Centers - AWS owned]
+    E[Edge Locations - CDN endpoints - Partner owned] --> A
+    F[Points of Presence - Internet access points] --> A
     
     style B fill:#3498DB,color:#fff
     style C fill:#2ECC71,color:#fff
@@ -166,10 +175,10 @@ graph TD
 | **On-Premise** | Own data centers | Strict compliance, sensitive data | Healthcare, government |
 
 ```mermaid
-graph LR
-    A[Deployment Models] --> B[Cloud<br/>All in cloud]
-    A --> C[Hybrid<br/>Cloud + On-Premise]
-    A --> D[On-Premise<br/>Private cloud]
+flowchart LR
+    A[Deployment Models] --> B[Cloud - All in cloud]
+    A --> C[Hybrid - Cloud + On-Premise]
+    A --> D[On-Premise - Private cloud]
     
     style B fill:#2ECC71,color:#fff
     style C fill:#F39C12,color:#fff
@@ -206,15 +215,15 @@ graph LR
 ### B) Visual Hierarchy
 
 ```mermaid
-graph TD
-    A[Global AWS Infrastructure] --> B[Regions<br/>Physical locations<br/>Isolated: power, water, location]
-    B --> C[Availability Zones<br/>Data centers<br/>2-3 per region<br/>Sub-10ms latency]
-    C --> D[Data Centers<br/>AWS owned & operated]
+flowchart TD
+    A[Global AWS Infrastructure] --> B[Regions - Physical locations - Isolated]
+    B --> C[Availability Zones - Data centers - 2-3 per region - Sub-10ms latency]
+    C --> D[Data Centers - AWS owned and operated]
     
-    A --> E[Edge Locations<br/>Partner owned<br/>CloudFront: downloads<br/>API Gateway: uploads]
-    A --> F[Points of Presence<br/>Internet access points]
+    A --> E[Edge Locations - Partner owned - CloudFront downloads - API Gateway uploads]
+    A --> F[Points of Presence - Internet access points]
     
-    B --> G[Multi-AZ Deployment<br/>High Availability<br/>If AZ fails → route to another]
+    B --> G[Multi-AZ Deployment - High Availability - Failover to another AZ]
     
     style B fill:#3498DB,color:#fff
     style C fill:#2ECC71,color:#fff
@@ -264,17 +273,17 @@ graph TD
 ### B) Visual Model
 
 ```mermaid
-graph TB
-    subgraph "Customer Responsibility - 'IN' the Cloud"
+flowchart TB
+    subgraph Customer["Customer Responsibility - IN the Cloud"]
         A[Data stored on AWS]
         B[Code running on AWS]
         C[Service Configuration]
-        D[IAM Roles & Policies]
+        D[IAM Roles and Policies]
         E[OS Selection on EC2]
         F[Security Groups]
     end
     
-    subgraph "AWS Responsibility - 'OF' the Cloud"
+    subgraph AWS["AWS Responsibility - OF the Cloud"]
         G[Physical Hardware]
         H[Global Infrastructure]
         I[Data Centers]
@@ -379,14 +388,14 @@ graph TB
 ### C) Visual: Security Groups vs NACLs
 
 ```mermaid
-graph TB
-    subgraph "Security Groups (Instance-Level)"
-        A[EC2 Instance] --> B[Security Group<br/>Stateful<br/>Allow rules only]
+flowchart TB
+    subgraph SG["Security Groups - Instance-Level"]
+        A[EC2 Instance] --> B[Security Group - Stateful - Allow rules only]
         B --> C[Evaluates all traffic]
     end
     
-    subgraph "NACLs (Subnet-Level)"
-        D[Subnet] --> E[Network ACL<br/>Stateless<br/>Allow + Deny rules]
+    subgraph NACL["NACLs - Subnet-Level"]
+        D[Subnet] --> E[Network ACL - Stateless - Allow and Deny rules]
         E --> F[Evaluates all traffic]
     end
     
@@ -478,10 +487,10 @@ graph TB
 #### C) Visual: S3 vs EBS vs EFS
 
 ```mermaid
-graph LR
-    A[Storage Needs] --> B[S3<br/>Object Storage<br/>HTTP access]
-    A --> C[EBS<br/>Block Storage<br/>EC2 attached]
-    A --> D[EFS<br/>File Storage<br/>Multiple EC2 mount]
+flowchart LR
+    A[Storage Needs] --> B[S3 - Object Storage - HTTP access]
+    A --> C[EBS - Block Storage - EC2 attached]
+    A --> D[EFS - File Storage - Multiple EC2 mount]
     
     style B fill:#3498DB,color:#fff
     style C fill:#2ECC71,color:#fff
@@ -548,15 +557,15 @@ graph LR
 #### B) Visual: VPC Architecture
 
 ```mermaid
-graph TB
-    A[VPC] --> B[Public Subnet<br/>Internet Gateway]
-    A --> C[Private Subnet<br/>No Internet Gateway]
+flowchart TB
+    A[VPC] --> B[Public Subnet - Internet Gateway]
+    A --> C[Private Subnet - No Internet Gateway]
     
-    B --> D[EC2 Instance<br/>Public + Private IP]
-    C --> E[EC2 Instance<br/>Private IP only]
+    B --> D[EC2 Instance - Public and Private IP]
+    C --> E[EC2 Instance - Private IP only]
     
-    B --> F[Route Table<br/>→ Internet Gateway]
-    C --> G[Route Table<br/>→ No Internet Gateway]
+    B --> F[Route Table - to Internet Gateway]
+    C --> G[Route Table - No Internet Gateway]
     
     style B fill:#2ECC71,color:#fff
     style C fill:#E74C3C,color:#fff
@@ -619,7 +628,7 @@ graph TB
 ### B) Visual Hierarchy
 
 ```mermaid
-graph TD
+flowchart TD
     A[Organization] --> B[Root Account]
     A --> C[Organizational Unit 1]
     A --> D[Organizational Unit 2]
@@ -628,7 +637,7 @@ graph TD
     C --> F[Account 2]
     D --> G[Account 3]
     
-    A --> H[Service Control Policies<br/>SCPs]
+    A --> H[Service Control Policies - SCPs]
     
     style A fill:#3498DB,color:#fff
     style B fill:#2ECC71,color:#fff
@@ -829,12 +838,12 @@ graph TD
 ### D) Cost Management Services
 
 ```mermaid
-graph TD
-    A[Cost Management] --> B[Tagging<br/>Organize resources]
-    A --> C[Budgets<br/>Set alerts]
-    A --> D[Cost Explorer<br/>Analyze costs]
-    A --> E[Consolidated Billing<br/>Multiple accounts]
-    A --> F[Cost and Usage Reports<br/>Detailed analysis]
+flowchart TD
+    A[Cost Management] --> B[Tagging - Organize resources]
+    A --> C[Budgets - Set alerts]
+    A --> D[Cost Explorer - Analyze costs]
+    A --> E[Consolidated Billing - Multiple accounts]
+    A --> F[Cost and Usage Reports - Detailed analysis]
     
     B --> G[Resource Groups]
     E --> H[Volume Discounts]
